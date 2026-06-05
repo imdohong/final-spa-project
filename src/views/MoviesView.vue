@@ -6,6 +6,7 @@ const store = useMovieStore();
 
 onMounted(() => {
   store.fetchMovies();
+   document.title = '🍿 국내 극장 화제작 (인기순)';
 });
 </script>
 
@@ -35,7 +36,12 @@ onMounted(() => {
 
         <div v-else class="poster-placeholder">이미지 준비 중</div>
 
-        <div class="card-content">
+        <div class="card-content"></div>
+        <RouterLink
+          :to="`/movies/${movie.id}`"
+          class="stretched-link"
+          :aria-label="`${movie.title} 상세 정보 보기`"
+        ></RouterLink>
           <h3 class="title">{{ movie.title }}</h3>
 
           <p class="release-date" v-if="movie.release_date">
@@ -63,7 +69,6 @@ onMounted(() => {
           </button>
         </div>
       </div>
-    </div>
   </main>
 </template>
 
@@ -111,11 +116,12 @@ onMounted(() => {
 }
 
 .movie-card {
+  position: relative; /* ✚ 투명 링크 영역 확장을 위한 기준점 추가 */
   border-radius: 12px;
   overflow: hidden;
   background: white;
   text-align: left;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   transition: transform 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -182,6 +188,8 @@ onMounted(() => {
 }
 
 .fav-btn {
+  position: relative; /* ✚ 레이어 층위 조절을 위한 포지션 추가 */
+  z-index: 2;         /* ✚ 투명 링크 위로 올려 버튼 단독 클릭 활성화 */
   width: 100%;
   padding: 12px;
   cursor: pointer;
@@ -198,5 +206,14 @@ onMounted(() => {
 .fav-btn.active {
   background: #ff4757;
   color: white;
+}
+
+.stretched-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1; /* 층위 레이어 1단계 설정 */
 }
 </style>

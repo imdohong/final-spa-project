@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import MoviesView from '../views/MoviesView.vue';
+import MovieDetailView from '../views/MovieDetailView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,8 +15,13 @@ const router = createRouter({
       path: '/movies', // (localhost:5173/movies)
       name: 'movies',
       component: MoviesView // 이 주소로 오면 MoviesView 컴포넌트를 띄워라!
-    }
-  ]
+    },
+    {
+      path: '/movies/:id',
+      name: 'movie-detail',
+      component: MovieDetailView,
+    },
+  ],
 });
 
 export default router;
