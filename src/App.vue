@@ -61,7 +61,7 @@ const submitHeaderSearch = () => {
             v-model="headerSearchKeyword"
             type="text"
             class="header-search-input"
-            placeholder="영화 검색"
+            placeholder="제목/줄거리 검색"
           />
           <button type="submit" class="header-search-btn">검색</button>
         </form>
