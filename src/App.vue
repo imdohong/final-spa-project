@@ -1,9 +1,11 @@
 <script setup>
-import { computed } from 'vue';
-import { RouterLink, RouterView } from 'vue-router';
+import { computed, ref } from 'vue';
+import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { useMovieStore } from './stores/movieStore';
 
+const router = useRouter();
 const store = useMovieStore();
+const headerSearchKeyword = ref('');
 
 const totalFavoritesCount = computed(() => {
   return store.favorites.length;
@@ -15,12 +17,28 @@ const averageFavoritesRating = computed(() => {
   }
 
   const totalRatingSum = store.favorites.reduce((accumulator, movie) => {
-    return accumulator + movie.vote_average;
+    return accumulator + (movie.vote_average || 0);
   }, 0);
 
   const calculatedAverage = totalRatingSum / store.favorites.length;
   return calculatedAverage.toFixed(1);
 });
+
+const submitHeaderSearch = () => {
+  const keyword = headerSearchKeyword.value.trim();
+
+  if (!keyword) {
+    alert('검색어를 입력해 주세요.');
+    return;
+  }
+
+  router.push({
+    name: 'search-results',
+    query: {
+      keyword
+    }
+  });
+};
 </script>
 
 <template>
@@ -35,7 +53,18 @@ const averageFavoritesRating = computed(() => {
         <nav class="nav-menu">
           <RouterLink to="/" class="nav-item">홈</RouterLink>
           <RouterLink to="/movies" class="nav-item">영화 목록</RouterLink>
+          <RouterLink to="/favorites" class="nav-item">찜 목록</RouterLink>
         </nav>
+
+        <form class="header-search" @submit.prevent="submitHeaderSearch">
+          <input
+            v-model="headerSearchKeyword"
+            type="text"
+            class="header-search-input"
+            placeholder="영화 검색"
+          />
+          <button type="submit" class="header-search-btn">검색</button>
+        </form>
 
         <div class="header-dashboard">
           <div class="dashboard-badge favorite-count">
@@ -73,16 +102,17 @@ const averageFavoritesRating = computed(() => {
   top: 0;
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 0 40px;
+  padding: 0 24px;
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  height: 80px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 18px;
 }
 
 .logo-zone {
@@ -91,6 +121,7 @@ const averageFavoritesRating = computed(() => {
   gap: 10px;
   text-decoration: none;
   color: #ffffff;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -108,16 +139,17 @@ const averageFavoritesRating = computed(() => {
 
 .nav-menu {
   display: flex;
-  gap: 30px;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .nav-item {
   color: #ced6e0;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   transition: color 0.2s ease;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 6px;
 }
 
@@ -131,14 +163,51 @@ const averageFavoritesRating = computed(() => {
   background-color: rgba(255, 87, 87, 0.1);
 }
 
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.header-search-input {
+  width: 100%;
+  height: 38px;
+  border: 1px solid #3f4656;
+  border-radius: 8px;
+  padding: 0 12px;
+  background-color: #2f3542;
+  color: #ffffff;
+  outline: none;
+  font-weight: 600;
+}
+
+.header-search-input::placeholder {
+  color: #a4b0be;
+}
+
+.header-search-btn {
+  height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff4757;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 .header-dashboard {
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .dashboard-badge {
   background-color: #2f3542;
-  padding: 10px 16px;
+  padding: 10px 14px;
   border-radius: 30px;
   display: flex;
   align-items: center;
@@ -147,7 +216,7 @@ const averageFavoritesRating = computed(() => {
 }
 
 .badge-label {
-  font-size: 13px;
+  font-size: 12px;
   color: #a4b0be;
   font-weight: 500;
 }
@@ -166,5 +235,31 @@ const averageFavoritesRating = computed(() => {
   flex-grow: 1;
   width: 100%;
   box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .header-content {
+    flex-wrap: wrap;
+    padding: 16px 0;
+  }
+
+  .header-search {
+    order: 3;
+    max-width: none;
+    width: 100%;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .header-content {
+    align-items: flex-start;
+  }
+
+  .nav-menu,
+  .header-dashboard {
+    width: 100%;
+    flex-wrap: wrap;
+  }
 }
 </style>
